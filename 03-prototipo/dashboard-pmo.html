@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard PMO — InovaTech</title>
+<style>
+  :root{
+    --bg:#f5f7fb; --card:#ffffff; --texto:#22303f; --muted:#5b6b7c; --borda:#e2e6ec;
+    --azul:#1b3a63; --azul2:#2f6fb0; --verde:#2f9e5b; --laranja:#d98324; --vermelho:#d1453b; --azulclaro:#eef3fa;
+    --verdebg:#e6f6ec; --laranjabg:#fdf1e2; --vermelhobg:#fbe9e8; --azulbg:#e8f0fb;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{ --bg:#12181f; --card:#1b232c; --texto:#e6ebf1; --muted:#9aa7b5; --borda:#2c3641;
+      --azulclaro:#1e2a3a; --verdebg:#123322; --laranjabg:#3a2a12; --vermelhobg:#3a1c1c; --azulbg:#182c44; }
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;padding-block:32px;background:var(--bg);color:var(--texto);font-family:'Segoe UI',Arial,sans-serif;line-height:1.5;}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px;}
+  header{margin-bottom:28px;}
+  header h1{font-size:1.6rem;margin:0 0 6px;color:var(--azul2);}
+  header p{margin:0;color:var(--muted);font-size:.95rem;}
+  .tag{display:inline-block;margin-top:10px;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.04em;background:var(--azulbg);color:var(--azul2);padding:4px 10px;border-radius:20px;}
+  section{margin-bottom:34px;}
+  h2{font-size:1.15rem;color:var(--azul2);margin:0 0 12px;border-left:4px solid var(--laranja);padding-left:10px;}
+  .card{background:var(--card);border:1px solid var(--borda);border-radius:12px;padding:20px;}
+  .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+  @media (max-width:760px){.grid3{grid-template-columns:1fr;}}
+  .qw-card{background:var(--card);border:1px solid var(--borda);border-left:4px solid var(--verde);border-radius:10px;padding:16px;}
+  .qw-card h3{margin:0 0 6px;font-size:.95rem;color:var(--texto);}
+  .qw-card p{margin:0;font-size:.85rem;color:var(--muted);}
+  .weights{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px;}
+  @media (max-width:760px){.weights{grid-template-columns:1fr 1fr;}}
+  .weight-item label{display:block;font-size:.78rem;font-weight:700;color:var(--muted);margin-bottom:4px;}
+  .weight-item .val{font-weight:800;color:var(--azul2);}
+  .weight-item input[type=range]{width:100%;}
+  .note{font-size:.78rem;color:var(--muted);margin:6px 0 0;}
+  table{width:100%;border-collapse:collapse;font-size:.85rem;}
+  th,td{padding:8px 10px;border-bottom:1px solid var(--borda);text-align:left;vertical-align:top;}
+  th{color:var(--muted);font-size:.72rem;text-transform:uppercase;letter-spacing:.03em;}
+  td.num, th.num{text-align:right;}
+  .badge{display:inline-block;font-size:.72rem;font-weight:800;padding:4px 10px;border-radius:20px;white-space:nowrap;}
+  .badge.acelerar{background:var(--verdebg);color:var(--verde);}
+  .badge.manter{background:var(--azulbg);color:var(--azul2);}
+  .badge.revisar{background:var(--laranjabg);color:var(--laranja);}
+  .badge.cancelar{background:var(--vermelhobg);color:var(--vermelho);}
+  .bar-wrap{background:var(--azulclaro);border-radius:6px;height:8px;width:100px;overflow:hidden;display:inline-block;vertical-align:middle;margin-right:8px;}
+  .bar-fill{height:100%;background:var(--azul2);}
+  .stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;}
+  @media (max-width:900px){.stats{grid-template-columns:repeat(2,1fr);}}
+  .stat{background:var(--card);border:1px solid var(--borda);border-radius:10px;padding:14px;text-align:center;}
+  .stat .v{font-size:1.25rem;font-weight:800;color:var(--vermelho);}
+  .stat .l{font-size:.72rem;color:var(--muted);margin-top:4px;}
+  .plan-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;}
+  @media (max-width:760px){.plan-grid{grid-template-columns:1fr;}}
+  .plan-col{border-radius:10px;padding:16px;border:1px solid var(--borda);}
+  .plan-col h3{margin:0 0 8px;font-size:.9rem;}
+  .plan-col ul{margin:0;padding-left:18px;font-size:.85rem;}
+  .plan-col li{margin-bottom:6px;}
+  .cash{margin-top:16px;background:var(--verdebg);border:1px solid var(--verde);border-radius:10px;padding:14px 18px;font-size:.9rem;}
+  .cash b{color:var(--verde);}
+  footer{margin-top:40px;font-size:.78rem;color:var(--muted);border-top:1px solid var(--borda);padding-top:14px;}
+  button.reset{background:transparent;border:1px solid var(--azul2);color:var(--azul2);font-size:.75rem;padding:6px 12px;border-radius:16px;cursor:pointer;}
+  button.reset:hover{background:var(--azulbg);}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <h1>Dashboard de PMO — InovaTech</h1>
+    <p>Protótipo funcional do Case Final: diagnóstico de PMO, quick wins, critérios de priorização e saneamento do portfólio de 8 projetos. (O item 5 do case — relatório de impacto/ROI do PMO em 12 meses — está fora do escopo desta entrega.)</p>
+    <span class="tag">Consultoria PMO · Estudo de Caso InovaTech</span>
+  </header>
+
+  <section id="diagnostico">
+    <h2>1. Diagnóstico do PMO</h2>
+    <div class="card">
+      <p><strong>Por que a InovaTech precisa de um PMO agora:</strong></p>
+      <ul>
+        <li>Silos entre Comercial, Marketing e Tecnologia geram decisões desconectadas (Marketing anuncia o que o P&D nem começou) — sem um ponto central de coordenação, isso não se resolve sozinho.</li>
+        <li>Visibilidade zero: os relatórios de status são subjetivos e conflitantes, e o próprio CEO não sabe o status real dos projetos — não existe hoje nenhuma governança de portfólio.</li>
+        <li>Sangramento de caixa ativo (retrabalho, orçamento parado, churn de clientes VIP) exige decisões rápidas e com autoridade, não apenas recomendações.</li>
+      </ul>
+      <p><strong>Modelo recomendado: PMO Diretivo (transicional, evoluindo para Controlador em 12 meses)</strong></p>
+      <ul>
+        <li>Um PMO de <em>Suporte</em> apenas orienta — não resolve uma crise em que o board já classifica a empresa como "caixa preta"; a urgência exige autoridade real de decisão.</li>
+        <li>Um PMO <em>Diretivo</em> pode assumir diretamente a gestão dos projetos críticos (Phoenix), aplicar critérios de priorização com poder de cancelar/acelerar orçamento, e padronizar o reporte — exatamente o que falta hoje.</li>
+        <li>Conforme os processos amadurecem e a comunicação entre áreas se normaliza, o modelo deve evoluir para <em>Controle</em> (governança e padronização, sem gerir os projetos diretamente), preservando autonomia das equipes técnicas.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="quickwins">
+    <h2>2. Quick Wins (implementáveis em até 30 dias, sem orçamento adicional)</h2>
+    <div class="grid3">
+      <div class="qw-card">
+        <h3>① Painel único de status semanal</h3>
+        <p>Um relatório padronizado (semáforo Verde/Amarelo/Vermelho) por projeto, único para todas as áreas, acaba com relatórios subjetivos e conflitantes e dá ao CEO visibilidade real em uma página.</p>
+      </div>
+      <div class="qw-card">
+        <h3>② Comitê semanal Comercial–Marketing–P&D</h3>
+        <p>Reunião de 30 minutos com pauta fixa de alinhamento antes de qualquer divulgação pública, eliminando o problema de Marketing anunciar o que o P&D ainda não construiu.</p>
+      </div>
+      <div class="qw-card">
+        <h3>③ Congelamento de novos projetos até o saneamento</h3>
+        <p>Nenhum projeto novo entra no portfólio até a triagem dos 8 projetos atuais estar concluída — estanca o "orçamento desperdiçado" e força foco nas prioridades já definidas.</p>
+      </div>
+    </div>
+  </section>
+
+  <section id="indicadores">
+    <h2>3. Indicadores de Sangramento Financeiro (hoje)</h2>
+    <div class="stats" id="stats"></div>
+  </section>
+
+  <section id="priorizacao">
+    <h2>4. Critérios de Priorização &amp; Saneamento de Portfólio</h2>
+    <div class="card">
+      <p class="note" style="margin-bottom:12px;">Ajuste os pesos abaixo para ver como a recomendação de cada projeto reage. Pesos padrão refletem a Missão (transformar dados em valor real), a Visão (referência em inovação nas Américas) e o pedido do CEO por resultado no balanço financeiro — por isso ROI e Alinhamento ao Projeto Phoenix têm o maior peso combinado, sem abandonar Urgência e Risco.</p>
+      <div class="weights">
+        <div class="weight-item">
+          <label>ROI Financeiro — <span class="val" id="v-roi">30%</span></label>
+          <input type="range" min="0" max="100" value="30" id="w-roi">
+        </div>
+        <div class="weight-item">
+          <label>Alinhamento Estratégico (Phoenix) — <span class="val" id="v-align">35%</span></label>
+          <input type="range" min="0" max="100" value="35" id="w-align">
+        </div>
+        <div class="weight-item">
+          <label>Urgência (bleeding financeiro) — <span class="val" id="v-urg">20%</span></label>
+          <input type="range" min="0" max="100" value="20" id="w-urg">
+        </div>
+        <div class="weight-item">
+          <label>Risco (segurança do projeto) — <span class="val" id="v-risk">15%</span></label>
+          <input type="range" min="0" max="100" value="15" id="w-risk">
+        </div>
+      </div>
+      <p class="note">Os pesos são normalizados automaticamente para somar 100% no cálculo do score. <button class="reset" id="btn-reset">↺ Restaurar pesos padrão</button></p>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Projeto</th>
+            <th class="num">ROI</th>
+            <th class="num">Alinh.</th>
+            <th class="num">Urgência</th>
+            <th class="num">Risco (impacto)</th>
+            <th class="num">Score</th>
+            <th>Recomendação</th>
+          </tr>
+        </thead>
+        <tbody id="tbody-projetos"></tbody>
+      </table>
+    </div>
+
+    <div class="plan-grid" style="margin-top:18px;">
+      <div class="plan-col" style="border-left:4px solid var(--vermelho);">
+        <h3 style="color:var(--vermelho);">🛑 Cancelar imediatamente</h3>
+        <ul>
+          <li><strong>Legacy Harmonizer</strong> — 0% de ROI, suporte a Windows 98/XP contradiz diretamente a estratégia cloud/SaaS do Phoenix; já consumiu R$ 1,9M em 4 anos sem entregar valor estratégico.</li>
+          <li><strong>Portal "InovaNews"</strong> — ROI negativo, sem ligação com Missão/Visão, e ainda carrega risco de vazamento de informação interna.</li>
+        </ul>
+      </div>
+      <div class="plan-col" style="border-left:4px solid var(--verde);">
+        <h3 style="color:var(--verde);">🚀 Acelerar (críticos para a sobrevivência)</h3>
+        <ul>
+          <li><strong>Migração Cloud (SaaS)</strong> — maior ROI do portfólio e núcleo do Projeto Phoenix; já está 6 meses atrasado e cada mês adicional custa parte dos R$ 5M/ano em vendas perdidas.</li>
+          <li><strong>Shield 2.0 (Security)</strong> — risco mais alto do portfólio (40%) e exposição a multas LGPD; segurança é pilar explícito do Phoenix.</li>
+          <li><strong>Engenharia.AI</strong> — evolução para plataforma com IA é parte central da estratégia; ainda em planejamento, mas com ROI e alinhamento altos.</li>
+        </ul>
+      </div>
+      <div class="plan-col" style="border-left:4px solid var(--laranja);">
+        <h3 style="color:var(--laranja);">⏸ Pausar / Revisar</h3>
+        <ul>
+          <li><strong>LatAm Expansion</strong> — expandir mercado antes de o produto principal estar competitivo (sem SaaS, sem IA) é um risco de queimar caixa fora de hora; pausar até o Phoenix avançar.</li>
+          <li><strong>CRM Rebirth</strong> — baixa adesão comercial e dados sujos indicam problema de governança, não de tecnologia; replanejar com patrocínio executivo antes de continuar investindo.</li>
+        </ul>
+      </div>
+      <div class="plan-col" style="border-left:4px solid var(--azul2);">
+        <h3 style="color:var(--azul2);">✅ Manter / Concluir</h3>
+        <ul>
+          <li><strong>Auto-Update System</strong> — quase pronto, baixo custo remanescente (R$ 50k) e reduz diretamente chamados de suporte; concluir é o quick win mais barato do portfólio.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="cash" id="cash-summary"></div>
+  </section>
+
+  <footer>
+    Fonte dos dados: Estudo de Caso "O Colapso Silencioso da InovaTech" (itens 1 a 4 do desafio de consultoria PMO). Dados também disponíveis em <code>data/portfolio.json</code> para reuso em planilhas/automação. Item 5 do case (estimativa de ROI do PMO em 12 meses) intencionalmente não executado nesta entrega.
+  </footer>
+
+</div>
+
+<script>
+const PROJETOS = [
+  {id:1, nome:"Migração Cloud (SaaS)", roiLabel:"400%", roiValor:400, custoTotal:4000000, consumido:3200000, disponivel:800000, impactoRiscoPct:25, alinhamentoEstrategico:100, urgencia:95, status:"Atrasado 6 meses / 15 Devs"},
+  {id:2, nome:"Shield 2.0 (Security)", roiLabel:"Prot.", roiValor:300, custoTotal:800000, consumido:450000, disponivel:350000, impactoRiscoPct:40, alinhamentoEstrategico:95, urgencia:100, status:"Em andamento / 3 Especialistas"},
+  {id:3, nome:"Engenharia.AI", roiLabel:"250%", roiValor:250, custoTotal:1500000, consumido:150000, disponivel:1350000, impactoRiscoPct:30, alinhamentoEstrategico:90, urgencia:55, status:"Planejamento / Equipe P&D"},
+  {id:4, nome:"CRM Rebirth", roiLabel:"120%", roiValor:120, custoTotal:500000, consumido:200000, disponivel:300000, impactoRiscoPct:15, alinhamentoEstrategico:55, urgencia:35, status:"Parado / TI Interno"},
+  {id:5, nome:"LatAm Expansion", roiLabel:"180%", roiValor:180, custoTotal:1200000, consumido:500000, disponivel:700000, impactoRiscoPct:20, alinhamentoEstrategico:35, urgencia:30, status:"40% concluído / Mkt & Vendas"},
+  {id:6, nome:"Auto-Update System", roiLabel:"80%", roiValor:80, custoTotal:300000, consumido:250000, disponivel:50000, impactoRiscoPct:10, alinhamentoEstrategico:55, urgencia:70, status:"Quase pronto / 2 Devs"},
+  {id:7, nome:"Legacy Harmonizer", roiLabel:"0%", roiValor:0, custoTotal:2000000, consumido:1900000, disponivel:100000, impactoRiscoPct:5, alinhamentoEstrategico:10, urgencia:15, status:"Ativo há 4 anos / 4 Devs"},
+  {id:8, nome:'Portal "InovaNews"', roiLabel:"Negat.", roiValor:-50, custoTotal:1000000, consumido:400000, disponivel:600000, impactoRiscoPct:5, alinhamentoEstrategico:10, urgencia:15, status:"Consultoria Ext. / Ativo"}
+];
+
+const INDICADORES = [
+  {label:"Retrabalho", valor:"R$ 1,2M/ano", desc:"Bugs urgentes pós-lançamento"},
+  {label:"Oportunidade perdida", valor:"R$ 5M/ano", desc:"Sem versão SaaS"},
+  {label:"Churn VIP", valor:"12%", desc:"Últimos 6 meses"},
+  {label:"Orçamento parado", valor:"R$ 3M", desc:"Iniciativas sem avanço"},
+  {label:"Lead time", valor:"18 meses", desc:"Mudança no motor de cálculo"}
+];
+
+function fmtBRL(v){
+  return v.toLocaleString('pt-BR', {style:'currency', currency:'BRL', maximumFractionDigits:0});
+}
+
+function renderStats(){
+  const el = document.getElementById('stats');
+  el.innerHTML = INDICADORES.map(i => `
+    <div class="stat">
+      <div class="v">${i.valor}</div>
+      <div class="l"><strong>${i.label}</strong><br>${i.desc}</div>
+    </div>`).join('');
+}
+
+function recomendacao(score){
+  if(score >= 70) return {label:"ACELERAR", cls:"acelerar"};
+  if(score >= 50) return {label:"MANTER", cls:"manter"};
+  if(score >= 30) return {label:"PAUSAR/REVISAR", cls:"revisar"};
+  return {label:"CANCELAR", cls:"cancelar"};
+}
+
+function getWeights(){
+  const raw = {
+    roi: +document.getElementById('w-roi').value,
+    align: +document.getElementById('w-align').value,
+    urg: +document.getElementById('w-urg').value,
+    risk: +document.getElementById('w-risk').value
+  };
+  const sum = raw.roi + raw.align + raw.urg + raw.risk || 1;
+  return {
+    roi: raw.roi/sum, align: raw.align/sum, urg: raw.urg/sum, risk: raw.risk/sum,
+    display: raw
+  };
+}
+
+function computeScores(){
+  const w = getWeights();
+  return PROJETOS.map(p => {
+    const roiNorm = Math.max(-100, (p.roiValor/400)*100);
+    const alignNorm = p.alinhamentoEstrategico;
+    const urgNorm = p.urgencia;
+    const riskSafety = 100 - p.impactoRiscoPct;
+    const score = w.roi*roiNorm + w.align*alignNorm + w.urg*urgNorm + w.risk*riskSafety;
+    return {...p, score, roiNorm, alignNorm, urgNorm, riskSafety, rec: recomendacao(score)};
+  });
+}
+
+function renderWeightLabels(){
+  const w = getWeights().display;
+  const sum = w.roi + w.align + w.urg + w.risk || 1;
+  document.getElementById('v-roi').textContent = Math.round(w.roi/sum*100) + '%';
+  document.getElementById('v-align').textContent = Math.round(w.align/sum*100) + '%';
+  document.getElementById('v-urg').textContent = Math.round(w.urg/sum*100) + '%';
+  document.getElementById('v-risk').textContent = Math.round(w.risk/sum*100) + '%';
+}
+
+function renderTable(){
+  const scored = computeScores();
+  const tbody = document.getElementById('tbody-projetos');
+  tbody.innerHTML = scored.map(p => `
+    <tr>
+      <td><strong>${p.nome}</strong><br><span style="color:var(--muted);font-size:.78rem;">${p.status}</span></td>
+      <td class="num">${p.roiLabel}</td>
+      <td class="num">${p.alinhamentoEstrategico}</td>
+      <td class="num">${p.urgencia}</td>
+      <td class="num">${p.impactoRiscoPct}%</td>
+      <td class="num">
+        <span class="bar-wrap"><span class="bar-fill" style="width:${Math.max(0,Math.min(100,p.score))}%"></span></span>
+        ${p.score.toFixed(1)}
+      </td>
+      <td><span class="badge ${p.rec.cls}">${p.rec.label}</span></td>
+    </tr>`).join('');
+
+  const cancelados = scored.filter(p => p.rec.label === 'CANCELAR');
+  const caixaLivre = cancelados.reduce((s,p) => s + p.disponivel, 0);
+  const cashEl = document.getElementById('cash-summary');
+  if(cancelados.length){
+    cashEl.innerHTML = `💰 <b>${fmtBRL(caixaLivre)}</b> em orçamento disponível seriam liberados hoje cancelando: ${cancelados.map(p=>p.nome).join(', ')} — redirecionáveis para acelerar Migração Cloud e Shield 2.0.`;
+  } else {
+    cashEl.innerHTML = `Nenhum projeto está classificado como CANCELAR com os pesos atuais.`;
+  }
+}
+
+function renderAll(){
+  renderWeightLabels();
+  renderTable();
+}
+
+['w-roi','w-align','w-urg','w-risk'].forEach(id => {
+  document.getElementById(id).addEventListener('input', renderAll);
+});
+document.getElementById('btn-reset').addEventListener('click', () => {
+  document.getElementById('w-roi').value = 30;
+  document.getElementById('w-align').value = 35;
+  document.getElementById('w-urg').value = 20;
+  document.getElementById('w-risk').value = 15;
+  renderAll();
+});
+
+renderStats();
+renderAll();
+</script>
+</body>
+</html>
